@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
@@ -36,5 +37,31 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
+    }
+
+    public function login(Request $request)
+    {
+        $rules = [
+            'email' => 'required|email',
+            'password' => 'required',
+        ];
+        
+        $messages = [
+            'email.required' => 'The email is required.',
+            'email.email' => 'The email needs to have a valid format.',
+            'password.required' => 'The password is required.',
+        ];
+        
+        
+        $this->validate($request, $rules, $messages);
+     
+        $credentials = $request->only('email', 'password');
+        if (\Auth::attempt($credentials)) {
+  
+            return redirect()->route('home');
+        }
+        //return redirect("login")->withErrors(['msg', 'Invalid credentials or unregistered user']);
+        return redirect("login")->with('error', 'Invalid credentials or unregistered user');   
+       
     }
 }
