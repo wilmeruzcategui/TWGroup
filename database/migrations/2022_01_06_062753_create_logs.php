@@ -16,6 +16,7 @@ class CreateLogs extends Migration
         Schema::create('logs', function (Blueprint $table) {
             $table->id();
             $table->string('comment');
+            $table->bigInteger('task_id');
             $table->timestamps();
         });
     }

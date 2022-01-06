@@ -19,4 +19,6 @@ Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('ho
 
 Route::group(['prefix'=>'tasks', 'use' ], function(){
     Route::post('/create', ['uses' => 'App\Http\Controllers\TaskController@create'])->name('createtask');
+    Route::post('/delete', ['uses' => 'App\Http\Controllers\TaskController@delete'])->name('deletetask');
+    Route::post('/edit', ['uses' => 'App\Http\Controllers\TaskController@edit'])->name('edittask');
 });
