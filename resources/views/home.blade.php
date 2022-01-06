@@ -49,10 +49,10 @@
                             <tr @if($task->date < date('Y-m-d')) style="background: #f7b0b0;" @endif>
                             <th scope="row">{{ $task->id }} </th>
                             <td> {{ $task->description }} </td>
-                            <td> {{ $task->date->format('d-m-Y') }} </td>
+                            <td> {{ $task->date->format('d/m/Y') }} </td>
                             <td data-description="{{ $task->description }}" data-id="{{ $task->id }}" data-user="{{ $task->user_id }}" data-date="{{ $task->date->format('d/m/Y') }}">
                                 @if($task->user_id === \Auth::user()->id)
-                                <button type="button" class="btn btn-secondary btn-sm">View</button>
+                                <button type="button" class="btn btn-secondary btn-sm log">Log</button>
                                 @endif
                                 <button type="button" class="btn btn-secondary btn-sm edit">Edit</button>
                                 <button type="button" class="btn btn-secondary btn-sm delete">Delete</button>
@@ -149,6 +149,42 @@
     </div>
   </div>
 </div>
+
+<!-- Modal Log -->
+<div class="modal fade" id="logModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="logModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="logModalLabel">Log Task</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="input-group mb-3">
+            <input type="hidden" id="taskidelog">
+            <input type="text" class="form-control" placeholder="Add Log to Task" aria-label="Add Log to Task" aria-describedby="button-addon2" id="inputAddLog">
+            <button class="btn btn-outline-secondary" type="button" id="bntAddLog">Add Log</button>
+        </div>
+        <div class="mb-3">
+        <table class="table">
+            <thead>
+                <tr>
+                <th scope="col">#</th>
+                <th scope="col">Description</th>
+                <th scope="col">Date</th>
+                </tr>
+            </thead>
+            <tbody id="contentLogs">
+
+            </tbody>
+        </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 @endsection
 
 @section('scripts')
@@ -233,5 +269,51 @@
 
     });
 
+    $(document).on('click', '.log', function(){
+        var td = $(this).closest('td');
+        var id = $(td).data('id');
+        $('#taskidelog').val(id);
+        $.ajax({
+            type: "get",
+            url: '{{ route("logs") }}',
+            data: {
+                "_token": "{{ csrf_token() }}",
+                id: id
+            },
+            success:function(data){
+                $('#contentLogs').html(data);
+                $("#logModal").modal('show');
+            },
+            error: function(data){
+                Swal.fire('Task Log error', '', 'error')
+            },
+        });
+    });
+
+    $(document).on('click', '#bntAddLog', function(){
+        var id = $('#taskidelog').val();
+        var addlog = $('#inputAddLog').val();
+        if(!addlog){
+            alert('Field Log is required');
+            return false;
+        }
+        $.ajax({
+            type: "POST",
+            url: '{{ route("addlogtask") }}',
+            data: {
+                "_token": "{{ csrf_token() }}",
+                id: id,
+                addlog: addlog,
+            },
+            success:function(data){
+                $('#contentLogs').html(data);
+                $('#inputAddLog').val('');
+            },
+            error: function(data){
+                Swal.fire('Task Log not add', '', 'error')
+            },
+        });
+    });
+   
 </script>
 @endsection

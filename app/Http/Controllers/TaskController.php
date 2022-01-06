@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Task;
+use App\Models\Log;
+use App\Mail\LogMail;
+use Mail;
 
 class TaskController extends Controller
 {
@@ -74,6 +77,32 @@ class TaskController extends Controller
         ]);
 
         $res=Task::where('id',$request->id)->delete();
+
+    }
+
+    public function logs(Request $request)
+    {
+        $logs = Log::where('task_id', $request->id)->get();
+        return view('logs')->with(compact('logs'));
+    }
+
+    public function addlog(Request $request)
+    {
+        $validated = $request->validate([
+            'id' => 'required',
+            'addlog' => 'required',
+        ]);
+
+        $task = new Log;
+        $task->comment = $request->addlog;
+        $task->task_id = $request->id;
+        $task->save();
+
+        Mail::to('wilmeruzcategui5@hotmail.com')->send(new LogMail());
+
+        $logs = Log::where('task_id', $request->id)->get();
+
+        return view('logs')->with(compact('logs'));
 
     }
 }

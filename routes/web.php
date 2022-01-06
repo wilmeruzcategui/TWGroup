@@ -21,4 +21,7 @@ Route::group(['prefix'=>'tasks', 'use' ], function(){
     Route::post('/create', ['uses' => 'App\Http\Controllers\TaskController@create'])->name('createtask');
     Route::post('/delete', ['uses' => 'App\Http\Controllers\TaskController@delete'])->name('deletetask');
     Route::post('/edit', ['uses' => 'App\Http\Controllers\TaskController@edit'])->name('edittask');
+    Route::get('/logs', ['uses' => 'App\Http\Controllers\TaskController@logs'])->name('logs');
+    Route::post('/addlog', ['uses' => 'App\Http\Controllers\TaskController@addlog'])->name('addlogtask');
+    
 });

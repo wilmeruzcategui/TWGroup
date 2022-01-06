@@ -89,7 +89,9 @@
         <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
             $(document).ready(function () {
-                $('.datepicker').datepicker();
+                $('.datepicker').datepicker({
+                    format: 'dd/mm/yyyy'
+                });
             });
         </script>
         @yield('scripts')
